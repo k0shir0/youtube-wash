@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>YouTube Wash — Settings</title>
+  <link rel="stylesheet" href="settings.css" />
+</head>
+<body>
+  <main>
+    <h1>YouTube Wash Settings</h1>
+
+    <section>
+      <h2>Watch Filter</h2>
+
+      <div class="field">
+        <label for="threshold">
+          Watched threshold: <output id="thresholdValue">80%</output>
+        </label>
+        <input type="range" id="threshold" min="50" max="100" step="1" />
+        <p class="hint">A video counts as watched once you've seen this much of it.</p>
+      </div>
+
+      <div class="field row">
+        <label for="placeholderMode">Show a placeholder card instead of hiding completely</label>
+        <input type="checkbox" id="placeholderMode" />
+      </div>
+
+      <div class="field row">
+        <label for="showLabel">Show "Already watched" label on placeholders</label>
+        <input type="checkbox" id="showLabel" />
+      </div>
+    </section>
+
+    <section>
+      <h2>Watched videos <span class="count" id="watchedCount"></span></h2>
+
+      <div class="list-toolbar">
+        <input type="search" id="search" placeholder="Search video IDs…" />
+        <button id="exportBtn" type="button">Export JSON</button>
+        <button id="importBtn" type="button">Import JSON</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden />
+        <button id="clearAll" type="button" class="danger">Clear All</button>
+      </div>
+
+      <label class="row small">
+        <input type="checkbox" id="importReplace" />
+        Import replaces the current list (unchecked = merge)
+      </label>
+
+      <ul id="watchedList" class="watched-list"></ul>
+      <p class="hint" id="listNote"></p>
+    </section>
+
+    <section class="module-b">
+      <h2>Ad / Tracker Blocker <span class="badge">Module B — not yet implemented</span></h2>
+      <div class="field row disabled">
+        <label>Enable ad/tracker blocking</label>
+        <input type="checkbox" disabled />
+      </div>
+      <div class="field row disabled">
+        <label>Filter lists (bundled, converted at build time)</label>
+        <input type="checkbox" disabled />
+      </div>
+      <p class="hint">
+        Planned: static declarativeNetRequest rules generated from bundled filter
+        lists at build time. No runtime downloads. See docs/module-b-design.md.
+      </p>
+    </section>
+  </main>
+
+  <script src="settings.js"></script>
+</body>
+</html>

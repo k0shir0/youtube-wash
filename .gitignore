@@ -1,0 +1,7 @@
+# Generated at build time — run: node build/convert-filters.js
+filter-lists/rules.json
+
+# web-ext packaging output
+web-ext-artifacts/
+
+node_modules/

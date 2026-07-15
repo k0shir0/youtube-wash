@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
+  "version": "0.1.0",
+  "default_locale": "en_US",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "youtube-wash@expulsian",
+      "strict_min_version": "115.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+
+  "permissions": ["storage"],
+
+  "background": {
+    "scripts": ["background/service-worker.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://www.youtube.com/*", "*://m.youtube.com/*"],
+      "js": [
+        "content/shared.js",
+        "content/youtube-player.js",
+        "content/youtube-feed.js"
+      ],
+      "css": ["content/youtube-wash.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "action": {
+    "default_title": "YouTube Wash",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/16.png",
+      "48": "icons/48.png",
+      "128": "icons/128.png"
+    }
+  },
+
+  "options_ui": {
+    "page": "settings/settings.html",
+    "open_in_tab": true
+  },
+
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self'"
+  }
+}

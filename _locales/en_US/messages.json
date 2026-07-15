@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "YouTube Wash",
+    "description": "Extension name shown in the add-ons manager and toolbar."
+  },
+  "extensionDescription": {
+    "message": "Hides YouTube videos you've already watched. Private by design: no telemetry, no external requests, everything stays in local storage.",
+    "description": "Extension description shown in the add-ons manager."
+  }
+}

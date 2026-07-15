@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>YouTube Wash</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <h1>YouTube Wash</h1>
+    <label class="switch" title="Master switch">
+      <input type="checkbox" id="masterEnabled" />
+      <span class="slider"></span>
+    </label>
+  </header>
+
+  <section class="modules">
+    <div class="module-row">
+      <span class="module-name">Watch Filter</span>
+      <label class="switch">
+        <input type="checkbox" id="watchFilterEnabled" />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="module-row disabled" title="Module B — not implemented yet">
+      <span class="module-name">Ad Blocker <small>(coming soon)</small></span>
+      <label class="switch">
+        <input type="checkbox" id="adBlockerEnabled" disabled />
+        <span class="slider"></span>
+      </label>
+    </div>
+  </section>
+
+  <section class="counter">
+    <span class="counter-value" id="hiddenCount">0</span>
+    <span class="counter-label">videos hidden this session</span>
+  </section>
+
+  <footer>
+    <a href="#" id="openSettings">Open Settings</a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
