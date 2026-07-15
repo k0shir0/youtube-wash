@@ -6,6 +6,7 @@ async function render() {
   const { settings, hiddenCount } = await browser.runtime.sendMessage({ type: "GET_STATE" });
   $("masterEnabled").checked = settings.masterEnabled;
   $("watchFilterEnabled").checked = settings.watchFilterEnabled;
+  $("repeatEnabled").checked = settings.repeatEnabled;
   $("adBlockerEnabled").checked = settings.adBlockerEnabled;
   $("hiddenCount").textContent = String(hiddenCount);
   document.body.classList.toggle("master-off", !settings.masterEnabled);
@@ -23,6 +24,7 @@ function bindToggle(id) {
 
 bindToggle("masterEnabled");
 bindToggle("watchFilterEnabled");
+bindToggle("repeatEnabled");
 
 $("openSettings").addEventListener("click", (e) => {
   e.preventDefault();

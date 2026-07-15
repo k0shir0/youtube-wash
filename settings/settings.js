@@ -18,6 +18,9 @@ async function loadState() {
   $("thresholdValue").textContent = `${Math.round(settings.threshold * 100)}%`;
   $("placeholderMode").checked = settings.placeholderMode;
   $("showLabel").checked = settings.showLabel;
+  $("repeatEnabled").checked = settings.repeatEnabled;
+  $("repeatThreshold").value = String(settings.repeatThreshold);
+  $("repeatThresholdValue").textContent = formatTimes(settings.repeatThreshold);
 
   renderList();
 }
@@ -64,7 +67,27 @@ function renderList() {
   }
 }
 
+function formatTimes(n) {
+  return `${n} time${n === 1 ? "" : "s"}`;
+}
+
 /* ------------------------------- settings ------------------------------- */
+
+$("repeatThreshold").addEventListener("input", () => {
+  $("repeatThresholdValue").textContent = formatTimes(Number($("repeatThreshold").value));
+});
+
+$("repeatThreshold").addEventListener("change", () => {
+  browser.runtime.sendMessage({
+    type: "SET_SETTINGS",
+    settings: { repeatThreshold: Number($("repeatThreshold").value) },
+  });
+});
+
+$("clearSeen").addEventListener("click", async () => {
+  if (!confirm("Forget all sighting counts? Videos will only be hidden again after they reappear.")) return;
+  await browser.runtime.sendMessage({ type: "CLEAR_SEEN" });
+});
 
 $("threshold").addEventListener("input", () => {
   $("thresholdValue").textContent = `${$("threshold").value}%`;
@@ -77,7 +100,7 @@ $("threshold").addEventListener("change", () => {
   });
 });
 
-for (const id of ["placeholderMode", "showLabel"]) {
+for (const id of ["placeholderMode", "showLabel", "repeatEnabled"]) {
   $(id).addEventListener("change", (e) => {
     browser.runtime.sendMessage({ type: "SET_SETTINGS", settings: { [id]: e.target.checked } });
   });

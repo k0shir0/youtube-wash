@@ -32,6 +32,32 @@
     </section>
 
     <section>
+      <h2>Repeat Video Fixer</h2>
+
+      <div class="field row">
+        <label for="repeatEnabled">Hide videos that keep reappearing in your feed unwatched</label>
+        <input type="checkbox" id="repeatEnabled" />
+      </div>
+
+      <div class="field">
+        <label for="repeatThreshold">
+          Hide after it has appeared <output id="repeatThresholdValue">1 time</output>
+        </label>
+        <input type="range" id="repeatThreshold" min="1" max="10" step="1" />
+        <p class="hint">
+          A video counts as "appeared" when its card is at least half visible in
+          your viewport, at most once per page visit. Hidden cards use the same
+          hide/placeholder mode as the Watch Filter.
+        </p>
+      </div>
+
+      <div class="field row">
+        <button id="clearSeen" type="button" class="danger">Clear seen history</button>
+        <span class="hint">Forget every sighting count and start fresh.</span>
+      </div>
+    </section>
+
+    <section>
       <h2>Watched videos <span class="count" id="watchedCount"></span></h2>
 
       <div class="list-toolbar">

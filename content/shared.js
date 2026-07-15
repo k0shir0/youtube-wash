@@ -83,10 +83,13 @@ const YTWash = (() => {
       watchFilterEnabled: true,
       adBlockerEnabled: false,
       threshold: 0.8,
-      placeholderMode: false,
+      placeholderMode: true,
       showLabel: true,
+      repeatEnabled: true,
+      repeatThreshold: 1,
     },
     watched: new Set(),
+    seen: new Map(), // videoId → prior feed-sighting count
     _subscribers: new Set(),
     _ready: null,
 
@@ -94,10 +97,15 @@ const YTWash = (() => {
       this._subscribers.add(fn);
     },
 
-    _notify() {
+    /**
+     * @param {{settingsChanged:boolean, watchedChanged:boolean,
+     *          seenChanged:boolean}} [info] what changed; undefined means
+     *          "assume everything" (initial load / fallback poll).
+     */
+    _notify(info) {
       for (const fn of this._subscribers) {
         try {
-          fn();
+          fn(info);
         } catch (e) {
           console.warn("[YouTube Wash] subscriber error", e);
         }
@@ -117,15 +125,45 @@ const YTWash = (() => {
       if (idsResponse && Array.isArray(idsResponse.watchedIds)) {
         this.watched = new Set(idsResponse.watchedIds);
       }
+      if (idsResponse && idsResponse.seenCounts && typeof idsResponse.seenCounts === "object") {
+        this.seen = new Map(Object.entries(idsResponse.seenCounts));
+      }
       this._notify();
     },
 
     /** Idempotent init: first refresh + change listener + fallback poll. */
     ready() {
       if (!this._ready) {
+        // Consume change payloads directly — no message round-trips. The
+        // background stays the only writer; this is read-only intake, and
+        // it fires every ~2s during scrolling (SEEN_BATCH flushes), so it
+        // must be cheap.
         browser.storage.onChanged.addListener((changes, area) => {
           if (area !== "local") return;
-          if (changes.watchedIds || changes.settings) this.refresh().catch(() => {});
+          const info = {
+            settingsChanged: "settings" in changes,
+            watchedChanged: "watchedIds" in changes,
+            seenChanged: "seenCounts" in changes,
+          };
+          if (!info.settingsChanged && !info.watchedChanged && !info.seenChanged) return;
+
+          if (info.settingsChanged && changes.settings.newValue) {
+            this.settings = { ...this.settings, ...changes.settings.newValue };
+          }
+          if (info.watchedChanged) {
+            const ids = changes.watchedIds.newValue;
+            this.watched = new Set(Array.isArray(ids) ? ids : []);
+          }
+          if (info.seenChanged) {
+            // Raw storage format is { id: [count, lastSeenMs] }.
+            const raw = changes.seenCounts.newValue || {};
+            const seen = new Map();
+            for (const [id, entry] of Object.entries(raw)) {
+              seen.set(id, Array.isArray(entry) ? entry[0] : entry);
+            }
+            this.seen = seen;
+          }
+          this._notify(info);
         });
         setInterval(() => this.refresh().catch(() => {}), 30_000);
         this._ready = this.refresh().catch((e) => {

@@ -18,9 +18,16 @@ const DEFAULT_SETTINGS = Object.freeze({
   watchFilterEnabled: true,
   adBlockerEnabled: false, // Module B — not implemented yet, always false
   threshold: 0.8, // watched when currentTime/duration >= threshold
-  placeholderMode: false, // false = hard-hide, true = placeholder card
+  placeholderMode: true, // true = placeholder card, false = hard-hide
   showLabel: true, // "Already watched" label on placeholder cards
+  repeatEnabled: true, // Repeat Video Fixer: hide cards seen too often
+  repeatThreshold: 1, // hide after this many prior feed sightings
 });
+
+// Repeat Video Fixer sighting counts: { videoId: [count, lastSeenMs] }.
+// Pruned by last-seen date so the map can't grow without bound.
+const MAX_SEEN_ENTRIES = 20_000;
+const SEEN_PRUNE_TO = 15_000;
 
 // YouTube video IDs are 11 chars today; accept 6–20 [A-Za-z0-9_-] to be
 // tolerant of format drift without accepting garbage.
@@ -48,6 +55,11 @@ async function getWatchedIds() {
   return Array.isArray(watchedIds) ? watchedIds : [];
 }
 
+async function getSeenCounts() {
+  const { seenCounts } = await browser.storage.local.get("seenCounts");
+  return seenCounts && typeof seenCounts === "object" ? seenCounts : {};
+}
+
 async function getHiddenCount() {
   const { hiddenCount } = await browser.storage.session.get("hiddenCount");
   return typeof hiddenCount === "number" ? hiddenCount : 0;
@@ -61,6 +73,11 @@ function sanitizeSettings(patch) {
   if (typeof patch.showLabel === "boolean") clean.showLabel = patch.showLabel;
   if (typeof patch.threshold === "number" && Number.isFinite(patch.threshold)) {
     clean.threshold = Math.min(1, Math.max(0.5, patch.threshold));
+  }
+  if (typeof patch.repeatEnabled === "boolean") clean.repeatEnabled = patch.repeatEnabled;
+  if (typeof patch.repeatThreshold === "number" && Number.isFinite(patch.repeatThreshold)) {
+    // Bounds must match the settings-page range input (1–10).
+    clean.repeatThreshold = Math.min(10, Math.max(1, Math.round(patch.repeatThreshold)));
   }
   // adBlockerEnabled is intentionally not settable until Module B ships.
   return clean;
@@ -85,7 +102,52 @@ const handlers = {
   },
 
   async GET_WATCHED_IDS() {
-    return { watchedIds: await getWatchedIds() };
+    const [watchedIds, seen] = await Promise.all([getWatchedIds(), getSeenCounts()]);
+    const seenCounts = {};
+    for (const [id, entry] of Object.entries(seen)) seenCounts[id] = entry[0];
+    return { watchedIds, seenCounts };
+  },
+
+  async SEEN_BATCH({ ids }) {
+    if (!Array.isArray(ids)) return { ok: false };
+    const valid = ids.filter((id) => typeof id === "string" && VIDEO_ID_RE.test(id));
+    if (valid.length === 0) return { ok: true };
+
+    const settings = await getSettings();
+    if (!settings.masterEnabled || !settings.repeatEnabled) return { ok: false };
+
+    return enqueueWrite(async () => {
+      const seen = await getSeenCounts();
+      const now = Date.now();
+      for (const id of valid) {
+        seen[id] = seen[id] ? [seen[id][0] + 1, now] : [1, now];
+      }
+      const keys = Object.keys(seen);
+      if (keys.length > MAX_SEEN_ENTRIES) {
+        keys.sort((a, b) => seen[a][1] - seen[b][1]); // oldest last-seen first
+        for (const key of keys.slice(0, keys.length - SEEN_PRUNE_TO)) delete seen[key];
+      }
+      await browser.storage.local.set({ seenCounts: seen });
+      return { ok: true };
+    });
+  },
+
+  async RESET_SEEN({ videoId }) {
+    return enqueueWrite(async () => {
+      const seen = await getSeenCounts();
+      if (videoId in seen) {
+        delete seen[videoId];
+        await browser.storage.local.set({ seenCounts: seen });
+      }
+      return { ok: true };
+    });
+  },
+
+  async CLEAR_SEEN() {
+    return enqueueWrite(async () => {
+      await browser.storage.local.set({ seenCounts: {} });
+      return { ok: true };
+    });
   },
 
   async GET_STATE() {
@@ -110,9 +172,16 @@ const handlers = {
     return enqueueWrite(async () => {
       const ids = await getWatchedIds();
       const next = ids.filter((id) => id !== videoId);
-      if (next.length !== ids.length) {
-        await browser.storage.local.set({ watchedIds: next });
+      const updates = {};
+      if (next.length !== ids.length) updates.watchedIds = next;
+      // Unwatching means "show me this again" — clear its sighting count
+      // too, or the Repeat Fixer instantly re-hides the card.
+      const seen = await getSeenCounts();
+      if (videoId in seen) {
+        delete seen[videoId];
+        updates.seenCounts = seen;
       }
+      if (Object.keys(updates).length > 0) await browser.storage.local.set(updates);
       return { removed: next.length !== ids.length, watchedCount: next.length };
     });
   },

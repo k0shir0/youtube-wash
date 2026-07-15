@@ -6,6 +6,12 @@ shell:
 - **Module A — Watched Video Filter** *(implemented)*: tracks videos you've
   watched past a configurable threshold (default 80%) and hides their cards
   from the home feed, search results, watch-page sidebar, and channel pages.
+- **Repeat Video Fixer** *(implemented)*: counts how often a card has been
+  in your viewport (≥50% visible, once per page visit) and hides videos that
+  keep reappearing unwatched — after 1 prior sighting by default,
+  configurable 1–10 in settings. Hide decisions use sighting counts
+  snapshotted at navigation time, so a card never vanishes while you're
+  looking at it.
 - **Module B — Ad / Tracker Blocker** *(designed, not active)*: static
   declarativeNetRequest rules generated from bundled filter lists at build
   time. See [docs/module-b-design.md](docs/module-b-design.md).
@@ -49,8 +55,8 @@ build/convert-filters.js   build-time ABP/uBO → DNR converter (Module B)
 ```
 
 Message flow: content scripts send `VIDEO_PROGRESS` / `GET_WATCHED_IDS` /
-`CARDS_HIDDEN`; UI pages send `GET_STATE` / `SET_SETTINGS` / `UNWATCH` /
-`CLEAR_WATCHED` / `IMPORT_WATCHED`. Content scripts cache the watched-ID set
+`CARDS_HIDDEN` / `SEEN_BATCH` / `RESET_SEEN`; UI pages send `GET_STATE` /
+`SET_SETTINGS` / `UNWATCH` / `CLEAR_WATCHED` / `IMPORT_WATCHED` / `CLEAR_SEEN`. Content scripts cache the watched-ID set
 locally and refresh it via read-only `storage.onChanged` plus a 30 s fallback
 poll — they never write storage directly.
 
