@@ -1,4 +1,4 @@
-/* YouTube Wash — placeholder-card styles (injected on youtube.com only). */
+/* FeedCleaner — placeholder-card styles (injected on youtube.com only). */
 
 /* When a card hosts a placeholder, hide everything else inside it. */
 .ytwash-placeholder-host > *:not(.ytwash-placeholder) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * YouTube Wash — build-time filter-list converter (Module B pipeline).
+ * FeedCleaner — build-time filter-list converter (Module B pipeline).
  *
  * Converts ABP/uBlock-Origin filter lists into a static declarativeNetRequest
  * ruleset. Runs at build time only — the extension never parses filter lists
@@ -365,7 +365,7 @@ function main() {
 
   /* ------------------------------- report ------------------------------- */
 
-  console.log("YouTube Wash — filter list conversion report");
+  console.log("FeedCleaner — filter list conversion report");
   console.log("=".repeat(60));
   for (const [file, s] of report) {
     const skippedTotal = [...s.skipped.values()].reduce((a, b) => a + b, 0);

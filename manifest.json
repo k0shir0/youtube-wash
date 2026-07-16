@@ -7,7 +7,7 @@
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "youtube-wash@expulsian",
+      "id": "feedcleaner@k0shir0",
       "strict_min_version": "115.0",
       "data_collection_permissions": {
         "required": ["none"]
@@ -29,13 +29,13 @@
         "content/youtube-player.js",
         "content/youtube-feed.js"
       ],
-      "css": ["content/youtube-wash.css"],
+      "css": ["content/feedcleaner.css"],
       "run_at": "document_idle"
     }
   ],
 
   "action": {
-    "default_title": "YouTube Wash",
+    "default_title": "FeedCleaner",
     "default_popup": "popup/popup.html",
     "default_icon": {
       "16": "icons/16.png",

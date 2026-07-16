@@ -1,4 +1,4 @@
-# YouTube Wash
+# FeedCleaner
 
 A privacy-focused Firefox (Manifest V3) extension with two modules sharing one
 shell:

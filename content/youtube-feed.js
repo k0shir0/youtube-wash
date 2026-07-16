@@ -1,5 +1,5 @@
 /**
- * YouTube Wash — feed filter.
+ * FeedCleaner — feed filter.
  *
  * Hides (or replaces with a placeholder) feed/search/sidebar/channel cards
  * for two reasons:

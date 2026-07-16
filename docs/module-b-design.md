@@ -98,7 +98,7 @@ The priority ladder reproduces ABP semantics: exceptions beat blocks,
 +  "declarative_net_request": {
 +    "rule_resources": [
 +      {
-+        "id": "youtube-wash-filters",
++        "id": "feedcleaner-filters",
 +        "enabled": false,
 +        "path": "filter-lists/rules.json"
 +      }

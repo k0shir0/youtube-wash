@@ -1,10 +1,10 @@
 {
   "extensionName": {
-    "message": "YouTube Wash",
+    "message": "FeedCleaner",
     "description": "Extension name shown in the add-ons manager and toolbar."
   },
   "extensionDescription": {
-    "message": "Hides YouTube videos you've already watched. Private by design: no telemetry, no external requests, everything stays in local storage.",
+    "message": "Cleans your YouTube feed: hides videos you've already watched and videos that keep reappearing unwatched. Private by design: no telemetry, no external requests, everything stays in local storage.",
     "description": "Extension description shown in the add-ons manager."
   }
 }

@@ -1,5 +1,5 @@
 /**
- * YouTube Wash — watch-progress tracker.
+ * FeedCleaner — watch-progress tracker.
  *
  * Attaches a `timeupdate` listener to the native <video> element on watch
  * and Shorts pages, and reports VIDEO_PROGRESS to the background once the

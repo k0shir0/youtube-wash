@@ -118,7 +118,7 @@ $("clearAll").addEventListener("click", async () => {
 
 $("exportBtn").addEventListener("click", () => {
   const payload = {
-    format: "youtube-wash/watched-list",
+    format: "feedcleaner/watched-list",
     version: 1,
     exportedAt: new Date().toISOString(),
     watchedIds,
@@ -127,7 +127,7 @@ $("exportBtn").addEventListener("click", () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `youtube-wash-watched-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `feedcleaner-watched-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
 });

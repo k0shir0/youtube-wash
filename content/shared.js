@@ -1,5 +1,5 @@
 /**
- * YouTube Wash — shared content-script utilities.
+ * FeedCleaner — shared content-script utilities.
  *
  * THE SINGLE POINT OF REPAIR: every assumption about YouTube's DOM lives in
  * this file (card element names, anchor shapes, player element lookup).
@@ -107,7 +107,7 @@ const YTWash = (() => {
         try {
           fn(info);
         } catch (e) {
-          console.warn("[YouTube Wash] subscriber error", e);
+          console.warn("[FeedCleaner] subscriber error", e);
         }
       }
     },
@@ -167,7 +167,7 @@ const YTWash = (() => {
         });
         setInterval(() => this.refresh().catch(() => {}), 30_000);
         this._ready = this.refresh().catch((e) => {
-          console.warn("[YouTube Wash] initial state fetch failed", e);
+          console.warn("[FeedCleaner] initial state fetch failed", e);
         });
       }
       return this._ready;

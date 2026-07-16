@@ -1,5 +1,5 @@
 /**
- * YouTube Wash — background event page (Firefox MV3).
+ * FeedCleaner — background event page (Firefox MV3).
  *
  * Owns ALL writes to browser.storage. Content scripts, popup, and settings
  * communicate exclusively via runtime messages handled here.
