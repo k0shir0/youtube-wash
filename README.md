@@ -21,7 +21,7 @@ Zero telemetry. Zero runtime network requests. All data in
 
 
 
-## **the extension in action on the youtube home page**
+## **The extension in action on the youtube home page**
 <img width="1712" height="970" alt="image" src="https://github.com/user-attachments/assets/330fbdcc-68f8-4666-89d9-6d76fa6b4852" />
 
 ## **Even blocks shorts** 
